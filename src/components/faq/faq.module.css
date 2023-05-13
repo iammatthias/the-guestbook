@@ -1,0 +1,23 @@
+.faq {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.faq__item {
+  padding-bottom: 4px;
+}
+
+.faq__item > button {
+  text-align: left;
+  border: 0;
+  width: 100%;
+  font-family: inherit;
+  padding: 8px;
+  background: var(--lightGold);
+}
+
+.faq__item > div {
+  text-align: left;
+  padding: 8px;
+}

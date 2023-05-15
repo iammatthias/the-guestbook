@@ -14,7 +14,7 @@
 }
 
 .label__inline {
-  grid-column: 2 / 4;
+  grid-column: 1 / 4;
   display: flex;
   align-items: center;
   justify-content: space-between;

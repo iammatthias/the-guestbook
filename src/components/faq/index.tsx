@@ -25,8 +25,8 @@ const FAQs = [
       "Users may sponsor a message to be displayed prominantly at the top of the guestbook. Only one message can be sponsored at a time.<br/><br/>The initial base price for a sponsored message is 0.0001 Ξ. Each new sponsored messaged starts at the last price + 0.0001 Ξ.<br/><br/>If a message has not been sponsored for 21 days the price will slowly decrease until it reaches the original 0.0001 Ξ price point.",
   },
   {
-    question: "Guestbook Contract",
-    answer: `The Guestbook contract is verified on <a href="${blockExplorer}address/${contract}#code" target="_blank" rel="noreferrer">Basescan</a>.`,
+    question: "Open Source",
+    answer: `The Guestbook contract is verified on <a href="${blockExplorer}address/${contract}#code" target="_blank" rel="noreferrer" alt="Link to view the contract on Basescan">Basescan</a>. The source code is available on <a href="https://github.com/iammatthias/the-guestbook/tree/main" target="_blank" rel="noreferrer" alt="Link to view the source code on Github">Github</a>.`,
   },
   {
     question: "Utility",

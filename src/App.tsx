@@ -54,13 +54,11 @@ function App() {
           maxWidth: "70ch",
           margin: "0 auto",
         }}>
-        <h1>Guestbook</h1>
+        <h1>The Guestbook</h1>
         {/* subtitle */}
-        <h2>
-          <span style={{ color: "gray", fontSize: 12 }}>
-            Connect your wallet to leave your mark and become a part of an
-            ever-growing tapestry of thoughts, stories, and experiences.
-          </span>
+        <h2 style={{ color: "gray", fontSize: 12 }}>
+          Connect your wallet to leave your mark and become a part of an
+          ever-growing tapestry of thoughts, stories, and experiences.
         </h2>
 
         <Faq />

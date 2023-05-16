@@ -1,13 +1,14 @@
 import "./polyfills";
+import "./reset.css";
 import "./global.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import {
   getDefaultWallets,
   RainbowKitProvider,
-  darkTheme,
+  lightTheme,
 } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { mainnet, sepolia, baseGoerli } from "wagmi/chains";
+import { mainnet, baseGoerli } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import React from "react";
@@ -36,8 +37,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider
         chains={chains}
-        theme={darkTheme({
+        theme={lightTheme({
           fontStack: "system",
+          borderRadius: "none",
+          accentColor: "#ffd700",
+          accentColorForeground: "#1c1c1c",
         })}>
         <App />
       </RainbowKitProvider>

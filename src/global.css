@@ -13,6 +13,7 @@ body {
     "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: #1c1c1c;
 }
 
 .header {

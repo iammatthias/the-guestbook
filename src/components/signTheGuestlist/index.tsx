@@ -112,7 +112,7 @@ export default function SignTheGuestlist() {
       />
 
       <label>
-        Is Sponsored:
+        Is Sponsored?{" "}
         <input
           type='checkbox'
           checked={isSponsored}

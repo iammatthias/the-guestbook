@@ -15,14 +15,18 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 
+// Environment Variables
+const VITE_ALCHEMY = import.meta.env.VITE_ALCHEMY;
+const VITE_WALLETCONNECT = import.meta.env.VITE_WALLETCONNECT;
+
 const { chains, publicClient } = configureChains(
   [mainnet, baseGoerli],
-  [alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY }), publicProvider()]
+  [alchemyProvider({ apiKey: VITE_ALCHEMY }), publicProvider()]
 );
 
 const { connectors } = getDefaultWallets({
   appName: "The Guestbook",
-  projectId: import.meta.env.VITE_WALLETCONNECT,
+  projectId: VITE_WALLETCONNECT,
   chains,
 });
 
@@ -32,7 +36,10 @@ const wagmiConfig = createConfig({
   publicClient,
 });
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error("Root element not found");
+
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider

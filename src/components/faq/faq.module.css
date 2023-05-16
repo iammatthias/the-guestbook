@@ -1,11 +1,8 @@
 .faq {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-}
-
-.faq__item {
-  padding-bottom: 4px;
+  gap: 8px;
+  font-size: 12px;
 }
 
 .faq__item > button {

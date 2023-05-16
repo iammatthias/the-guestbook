@@ -5,18 +5,19 @@ import { formatEther, parseEther } from "viem";
 
 import styles from "./signTheGuestlist.module.css";
 
-const contract = import.meta.env.VITE_CONTRACT_BASE_GOERLI;
-const chainId = 84531;
+// Environment Variables and Constants
+const CONTRACT = import.meta.env.VITE_CONTRACT_BASE_GOERLI;
+const TARGET_CHAIN_ID = 84531;
 
 export default function SignTheGuestlist() {
   const [text, setText] = useState("");
   const [isSponsored, setIsSponsored] = useState(false);
   const [price, setPrice] = useState("0");
-  const [minPrice, setMinPrice] = useState("0");
+  const [isLoading, setIsLoading] = useState(false);
 
   const { data: currentMinPrice } = useContractRead({
-    address: contract,
-    chainId: chainId,
+    address: CONTRACT,
+    chainId: TARGET_CHAIN_ID,
     functionName: "getCurrentMinPrice",
     watch: true,
     abi: [
@@ -37,8 +38,8 @@ export default function SignTheGuestlist() {
   });
 
   const newGuest = useContractWrite({
-    address: contract,
-    chainId: chainId,
+    address: CONTRACT,
+    chainId: TARGET_CHAIN_ID,
     functionName: "signGuestbookNew",
     abi: [
       {
@@ -57,12 +58,16 @@ export default function SignTheGuestlist() {
     ],
     onSuccess() {
       setText("");
+      setIsLoading(false);
+    },
+    onError() {
+      setIsLoading(false);
     },
   });
 
   const newSponsoredGuest = useContractWrite({
-    address: contract,
-    chainId: chainId,
+    address: CONTRACT,
+    chainId: TARGET_CHAIN_ID,
     functionName: "sponsorMessage",
     abi: [
       {
@@ -83,19 +88,34 @@ export default function SignTheGuestlist() {
     value: parseEther(price as any),
     onSuccess() {
       setText("");
+      setIsLoading(false);
+    },
+    onError() {
+      setIsLoading(false);
     },
   });
 
-  // Get current minimum price on component mount and whenever isSponsored changes
   useEffect(() => {
-    if (isSponsored) {
-      setMinPrice(formatEther(currentMinPrice as bigint));
-      setPrice(formatEther(currentMinPrice as bigint));
+    if (isSponsored && currentMinPrice) {
+      setPrice(formatEther(currentMinPrice));
     }
   }, [isSponsored, currentMinPrice]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!text) {
+      alert("Please enter a message.");
+      return;
+    }
+    if (
+      isSponsored &&
+      parseFloat(price) < parseFloat(formatEther(currentMinPrice as bigint))
+    ) {
+      alert("Price must be equal to or greater than the minimum price.");
+      return;
+    }
+
+    setIsLoading(true);
     if (isSponsored) {
       newSponsoredGuest?.write({ args: [text] });
     } else {
@@ -122,7 +142,7 @@ export default function SignTheGuestlist() {
 
       {isSponsored && (
         <label className={`${styles.label__inline}`}>
-          Minimum Price: {minPrice} Ξ
+          Minimum Price: {price} Ξ
           <input
             type='number'
             value={price}

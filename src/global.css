@@ -23,3 +23,24 @@ body {
   position: sticky;
   top: 8px;
 }
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 70ch;
+  margin: 0 auto;
+}
+
+.tagline {
+  color: #424242;
+  font-size: 12px;
+  font-weight: 400;
+  font-style: italic;
+}
+
+a {
+  color: var(--darkGold);
+  font-style: italic;
+  font-weight: bold;
+}

@@ -1,19 +1,24 @@
-// get the guestlist from the contract and display
-// we'll be using useReadContract from `wagmi`
-
 import { useContractRead, useEnsName } from "wagmi";
 import { fromHex } from "viem";
 import Sparkles from "react-sparkle";
 import styles from "./guestlist.module.css";
 
-const contract = import.meta.env.VITE_CONTRACT_BASE_GOERLI;
-const blockExplorer = import.meta.env.VITE_BASESCAN;
-const chainId = 84531;
+// Environment Variables and Constants
+const CONTRACT = import.meta.env.VITE_CONTRACT_BASE_GOERLI;
+const TARGET_CHAIN_ID = 84531;
+
+function GuestName({ address }: { address: string }) {
+  const { data: name, isLoading } = useEnsName({
+    address: address as any,
+    chainId: 1,
+  });
+  return <>{isLoading ? address : name}</>;
+}
 
 export default function GuestList() {
   const { data, isError, isLoading } = useContractRead({
-    address: contract,
-    chainId: chainId,
+    address: CONTRACT,
+    chainId: TARGET_CHAIN_ID,
     functionName: "getAllGuests",
     watch: true,
     abi: [
@@ -59,54 +64,35 @@ export default function GuestList() {
     return <div>Loading...</div>;
   }
 
-  if (isError) {
+  if (isError || !data) {
     return <div>Error!</div>;
   }
 
   const sortedData = data
-    ?.map((guest: any) => {
-      return {
-        guest: guest.guest,
-        message: guest.message,
-        timestamp: `${guest.timestamp}`,
-        isSponsored: guest.isSponsored,
-      };
-    })
-    .reverse();
-
-  // find the 1 most recent sponsored guest and put them at the top
-  const sponsoredGuest = sortedData?.find((guest: any) => guest.isSponsored);
-  const sponsoredGuestIndex = sortedData?.indexOf(sponsoredGuest as any);
-  if (sponsoredGuestIndex !== undefined && sponsoredGuestIndex !== -1) {
-    sortedData?.splice(sponsoredGuestIndex, 1);
-    sortedData?.unshift(sponsoredGuest as any);
-  }
-
-  function getGuestName(address: string) {
-    const {
-      data: name,
-      isError,
-      isLoading,
-    } = useEnsName({
-      address: address as any,
-      chainId: 1,
+    ?.map((guest: any) => ({
+      guest: guest.guest,
+      message: guest.message,
+      timestamp: `${guest.timestamp}`,
+      isSponsored: guest.isSponsored,
+    }))
+    .sort((a, b) => {
+      // Sponsored guests go to the top
+      if (a.isSponsored !== b.isSponsored) {
+        return a.isSponsored ? -1 : 1;
+      }
+      // Within sponsored or non-sponsored guests, sort by timestamp
+      return Number(b.timestamp) - Number(a.timestamp);
     });
-    if (isLoading) {
-      return address;
-    }
-    if (isError) {
-      return address;
-    }
-    return name;
-  }
 
   return (
     <>
       {sortedData?.map((guest: any, index) => (
-        <div key={index} className={`${styles.guestlist}`}>
+        <div
+          key={guest.guest + guest.timestamp}
+          className={`${styles.guestlist}`}>
           <div className={`${styles.guestlist__address}`}>
             <a href={`https://rainbow.me/${guest.guest}`}>
-              {getGuestName(guest.guest)}
+              <GuestName address={guest.guest} />
             </a>
           </div>
           <div className={`${styles.guestlist__timestamp}`}>

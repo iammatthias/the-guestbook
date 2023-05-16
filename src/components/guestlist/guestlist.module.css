@@ -5,6 +5,7 @@
   gap: 8px;
   padding: 8px 12px;
   border-top: 1px solid var(--extraLightGold);
+  /* border-top: 1px solid var(--darkGold); */
   @media screen {
     @media (max-width: 768px) {
       grid-template-areas: "address addres" "timestamp timestamp" "message message" "sponsored sponsored";

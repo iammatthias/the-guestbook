@@ -1,20 +1,17 @@
 .form {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr;
   width: 100%;
   gap: 16px;
   align-items: center;
 }
 
 .form textarea {
-  grid-column: 1 / 4;
-  width: calc(100% - 16px);
   height: 100px;
   padding: 8px;
 }
 
 .label__inline {
-  grid-column: 1 / 4;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -25,7 +22,6 @@
 }
 
 .form button {
-  grid-column: 1 / 4;
   width: 100%;
   height: 40px;
   border: none;

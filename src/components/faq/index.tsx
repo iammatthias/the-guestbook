@@ -37,17 +37,28 @@ const FAQs = [
 export default function Faq() {
   return (
     <>
-      <h2>FAQ</h2>
       <Accordion.Root type='single' className={faqClass} collapsible>
-        {FAQs.map((faq, index) => (
-          <Accordion.Item
-            className={faqItemClass}
-            value={`item-${index + 1}`}
-            key={`item-${index + 1}`}>
-            <Accordion.Trigger>{faq.question}</Accordion.Trigger>
-            <Accordion.Content>{HTMLReactParser(faq.answer)}</Accordion.Content>
-          </Accordion.Item>
-        ))}
+        <Accordion.Item
+          className={faqItemClass}
+          value={`item-faq`}
+          key={`item-faq`}>
+          <Accordion.Trigger>FAQ</Accordion.Trigger>
+          <Accordion.Content>
+            <Accordion.Root type='single' className={faqClass} collapsible>
+              {FAQs.map((faq, index) => (
+                <Accordion.Item
+                  className={faqItemClass}
+                  value={`item-${index + 1}`}
+                  key={`item-${index + 1}`}>
+                  <Accordion.Trigger>{faq.question}</Accordion.Trigger>
+                  <Accordion.Content>
+                    {HTMLReactParser(faq.answer)}
+                  </Accordion.Content>
+                </Accordion.Item>
+              ))}
+            </Accordion.Root>
+          </Accordion.Content>
+        </Accordion.Item>
       </Accordion.Root>
     </>
   );

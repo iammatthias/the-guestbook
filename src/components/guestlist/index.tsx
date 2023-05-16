@@ -8,7 +8,7 @@ import styles from "./guestlist.module.css";
 
 export default function GuestList() {
   const { data, isError, isLoading } = useContractRead({
-    address: import.meta.env.VITE_CONTRACT,
+    address: import.meta.env.VITE_CONTRACT_BASE_GOERLI,
     chainId: 11155111,
     functionName: "getAllGuests",
     watch: true,

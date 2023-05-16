@@ -7,7 +7,7 @@ import {
   darkTheme,
 } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { mainnet, polygon, optimism, arbitrum, sepolia } from "wagmi/chains";
+import { mainnet, sepolia, baseGoerli } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import React from "react";
@@ -15,7 +15,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 
 const { chains, publicClient } = configureChains(
-  [mainnet, sepolia],
+  [baseGoerli],
   [alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY }), publicProvider()]
 );
 

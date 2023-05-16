@@ -12,7 +12,7 @@ export default function SignTheGuestlist() {
   const [minPrice, setMinPrice] = useState("0");
 
   const { data: currentMinPrice } = useContractRead({
-    address: import.meta.env.VITE_CONTRACT,
+    address: import.meta.env.VITE_CONTRACT_BASE_GOERLI,
     chainId: 11155111,
     functionName: "getCurrentMinPrice",
     watch: true,
@@ -34,7 +34,7 @@ export default function SignTheGuestlist() {
   });
 
   const newGuest = useContractWrite({
-    address: import.meta.env.VITE_CONTRACT,
+    address: import.meta.env.VITE_CONTRACT_BASE_GOERLI,
     chainId: 11155111,
     functionName: "signGuestbookNew",
     abi: [
@@ -58,7 +58,7 @@ export default function SignTheGuestlist() {
   });
 
   const newSponsoredGuest = useContractWrite({
-    address: import.meta.env.VITE_CONTRACT,
+    address: import.meta.env.VITE_CONTRACT_BASE_GOERLI,
     chainId: 11155111,
     functionName: "sponsorMessage",
     abi: [

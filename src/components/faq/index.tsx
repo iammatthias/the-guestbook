@@ -43,12 +43,12 @@ export default function Faq() {
               <Accordion.Content>
                 The Guestbook contract is verified on{" "}
                 <a
-                  href={`${import.meta.env.VITE_ETHERSCAN}address/${
-                    import.meta.env.VITE_CONTRACT
+                  href={`${import.meta.env.VITE_BASESCAN}address/${
+                    import.meta.env.VITE_CONTRACT_BASE_GOERLI
                   }#code`}
                   target='_blank'
                   rel='noreferrer'>
-                  Etherscan
+                  Basescan
                 </a>
                 .
               </Accordion.Content>

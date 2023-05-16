@@ -13,34 +13,39 @@ export default function Faq() {
         <Accordion.Content>
           <Accordion.Root type='single' className={`${styles.faq}`} collapsible>
             <Accordion.Item className={`${styles.faq__item}`} value='item-1'>
-              <Accordion.Trigger>Sign The Guestbook</Accordion.Trigger>
+              <Accordion.Trigger>Signing The Guestbook</Accordion.Trigger>
               <Accordion.Content>
-                Sign the Guestbook by sending a message to the contract address.
-                The message must be 140 characters or less. If you choose, you
-                may sponsor a message to promote it to the top of the guestbook.
+                Connect your wallet to leave a message on the blockchain. Your
+                message must be between 1 and 140 characters. Hateful or
+                inflamatory content will be moderated.
               </Accordion.Content>
             </Accordion.Item>
             <Accordion.Item className={`${styles.faq__item}`} value='item-2'>
-              <Accordion.Trigger>Sponsored Messages</Accordion.Trigger>
+              <Accordion.Trigger>Content Moderation</Accordion.Trigger>
               <Accordion.Content>
-                A sponsored message will always carry a minimum price of `last
-                price + 0.0001 Ξ`.
-                <br />
-                <br />
-                The most recent sponsored message will be prominantly displayed
-                until a new message is sponsored. If a message has not been
-                sponsored for 21 days the price will slowly decrease until it
-                reaches the original 0.0001 Ξ price point.
+                We ensure a safe and welcoming space by moderating content. When
+                hateful or inflamatory is posted it will be rewritten to `gm,
+                hf` at the contract owners discretion.
               </Accordion.Content>
             </Accordion.Item>
             <Accordion.Item className={`${styles.faq__item}`} value='item-3'>
-              <Accordion.Trigger>Content Moderation</Accordion.Trigger>
+              <Accordion.Trigger>Sponsored Messages</Accordion.Trigger>
               <Accordion.Content>
-                Our team ensures a safe and welcoming space by monitoring and
-                rewriting inappropriate content. When content moderation is
-                required the message in question will be changed to `gm, hf`.
+                Users may sponsor a message to be displayed prominantly at the
+                top of the guestbook. Only one message can be sponsored at a
+                time.
+                <br />
+                <br />
+                The initial base price for a sponsored message is 0.0001 Ξ. Each
+                new sponsored messaged will start at the last price + 0.0001 Ξ.
+                <br />
+                <br />
+                If a message has not been sponsored for 21 days the price will
+                slowly decrease until it reaches the original 0.0001 Ξ price
+                point.
               </Accordion.Content>
             </Accordion.Item>
+
             <Accordion.Item className={`${styles.faq__item}`} value='item-4'>
               <Accordion.Trigger>Guestbook Contract</Accordion.Trigger>
               <Accordion.Content>
@@ -57,8 +62,7 @@ export default function Faq() {
             <Accordion.Item className={`${styles.faq__item}`} value='item-5'>
               <Accordion.Trigger>Utility</Accordion.Trigger>
               <Accordion.Content>
-                The Guestbook is a place to share moments. There are no tokens,
-                airdrops, or other gimmicks.
+                There is none. Be safe, and have fun ✌️
               </Accordion.Content>
             </Accordion.Item>
           </Accordion.Root>

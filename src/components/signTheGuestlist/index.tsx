@@ -5,6 +5,9 @@ import { formatEther, parseEther } from "viem";
 
 import styles from "./signTheGuestlist.module.css";
 
+const contract = import.meta.env.VITE_CONTRACT_BASE_GOERLI;
+const chainId = 84531;
+
 export default function SignTheGuestlist() {
   const [text, setText] = useState("");
   const [isSponsored, setIsSponsored] = useState(false);
@@ -12,8 +15,8 @@ export default function SignTheGuestlist() {
   const [minPrice, setMinPrice] = useState("0");
 
   const { data: currentMinPrice } = useContractRead({
-    address: import.meta.env.VITE_CONTRACT_BASE_GOERLI,
-    chainId: 11155111,
+    address: contract,
+    chainId: chainId,
     functionName: "getCurrentMinPrice",
     watch: true,
     abi: [
@@ -34,8 +37,8 @@ export default function SignTheGuestlist() {
   });
 
   const newGuest = useContractWrite({
-    address: import.meta.env.VITE_CONTRACT_BASE_GOERLI,
-    chainId: 11155111,
+    address: contract,
+    chainId: chainId,
     functionName: "signGuestbookNew",
     abi: [
       {
@@ -58,8 +61,8 @@ export default function SignTheGuestlist() {
   });
 
   const newSponsoredGuest = useContractWrite({
-    address: import.meta.env.VITE_CONTRACT_BASE_GOERLI,
-    chainId: 11155111,
+    address: contract,
+    chainId: chainId,
     functionName: "sponsorMessage",
     abi: [
       {

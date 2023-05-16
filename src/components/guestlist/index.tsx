@@ -6,10 +6,14 @@ import { fromHex } from "viem";
 import Sparkles from "react-sparkle";
 import styles from "./guestlist.module.css";
 
+const contract = import.meta.env.VITE_CONTRACT_BASE_GOERLI;
+const blockExplorer = import.meta.env.VITE_BASESCAN;
+const chainId = 84531;
+
 export default function GuestList() {
   const { data, isError, isLoading } = useContractRead({
-    address: import.meta.env.VITE_CONTRACT_BASE_GOERLI,
-    chainId: 11155111,
+    address: contract,
+    chainId: chainId,
     functionName: "getAllGuests",
     watch: true,
     abi: [
@@ -101,10 +105,29 @@ export default function GuestList() {
       {sortedData?.map((guest: any, index) => (
         <div key={index} className={`${styles.guestlist}`}>
           <div className={`${styles.guestlist__address}`}>
-            {getGuestName(guest.guest)}
+            <a href={`https://rainbow.me/${guest.guest}`}>
+              {getGuestName(guest.guest)}
+            </a>
           </div>
-          <div
-            className={`${styles.guestlist__timestamp}`}>{`${guest.timestamp}`}</div>
+          <div className={`${styles.guestlist__timestamp}`}>
+            {/* 12:00 Jan 1, 2023 format the timestamp like this */}
+            {new Date(parseInt(guest.timestamp) * 1000).toLocaleTimeString(
+              "en-US",
+              {
+                hour: "numeric",
+                minute: "numeric",
+              }
+            )}{" "}
+            •{" "}
+            {new Date(parseInt(guest.timestamp) * 1000).toLocaleDateString(
+              "en-US",
+              {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }
+            )}
+          </div>
 
           {/* convert the message hex to ascii */}
           <div className={`${styles.guestlist__message}`}>

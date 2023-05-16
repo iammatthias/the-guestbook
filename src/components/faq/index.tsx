@@ -2,6 +2,9 @@ import * as Accordion from "@radix-ui/react-accordion";
 
 import styles from "./faq.module.css";
 
+const contract = import.meta.env.VITE_CONTRACT_BASE_GOERLI;
+const blockExplorer = import.meta.env.VITE_BASESCAN;
+
 export default function Faq() {
   return (
     <Accordion.Root type='single' className={`${styles.faq}`} collapsible>
@@ -43,9 +46,7 @@ export default function Faq() {
               <Accordion.Content>
                 The Guestbook contract is verified on{" "}
                 <a
-                  href={`${import.meta.env.VITE_BASESCAN}address/${
-                    import.meta.env.VITE_CONTRACT_BASE_GOERLI
-                  }#code`}
+                  href={`${blockExplorer}address/${contract}#code`}
                   target='_blank'
                   rel='noreferrer'>
                   Basescan

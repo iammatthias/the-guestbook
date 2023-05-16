@@ -15,7 +15,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 
 const { chains, publicClient } = configureChains(
-  [baseGoerli],
+  [mainnet, baseGoerli],
   [alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY }), publicProvider()]
 );
 

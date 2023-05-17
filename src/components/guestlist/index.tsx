@@ -75,14 +75,13 @@ export default function GuestList() {
       timestamp: `${guest.timestamp}`,
       isSponsored: guest.isSponsored,
     }))
-    .sort((a, b) => {
-      // Sponsored guests go to the top
-      if (a.isSponsored !== b.isSponsored) {
-        return a.isSponsored ? -1 : 1;
+    .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
+    .reduce((arr: any[], item: any) => {
+      if (item.isSponsored && !arr.some((i) => i.isSponsored)) {
+        return [item, ...arr];
       }
-      // Within sponsored or non-sponsored guests, sort by timestamp
-      return Number(b.timestamp) - Number(a.timestamp);
-    });
+      return [...arr, item];
+    }, [] as any[]);
 
   return (
     <>

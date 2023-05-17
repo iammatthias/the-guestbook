@@ -8,11 +8,11 @@ const CONTRACT = import.meta.env.VITE_CONTRACT_BASE_GOERLI;
 const TARGET_CHAIN_ID = 84531;
 
 function GuestName({ address }: { address: string }) {
-  const { data: name, isLoading } = useEnsName({
+  const { data: name } = useEnsName({
     address: address as any,
     chainId: 1,
   });
-  return <>{isLoading ? address : name}</>;
+  return <>{name ? name : address}</>;
 }
 
 export default function GuestList() {

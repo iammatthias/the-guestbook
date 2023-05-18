@@ -26,7 +26,7 @@ const FAQs = [
   },
   {
     question: "Open Source",
-    answer: `The Guestbook contract is verified on <a href="${blockExplorer}address/${contract}#code" target="_blank" rel="noreferrer" alt="Link to view the contract on Basescan">Basescan</a>. The source code is available on <a href="https://github.com/iammatthias/the-guestbook/tree/main" target="_blank" rel="noreferrer" alt="Link to view the source code on Github">Github</a>.`,
+    answer: `The Guestbook contract is verified on <a href="${blockExplorer}address/${contract}#code" target="_blank" rel="noreferrer" alt="Link to view the contract on Basescan">Basescan</a>. The source code is available on <a href="https://github.com/iammatthias/the-guestbook/tree/main" target="_blank" rel="noreferrer" alt="Link to view the source code on Github">Github</a>.<br/><br/>The front-end is built with <a href="https://vitejs.dev/">ViteJS</a>, <a href="https://wagmi.sh/">Wagmi</a>, <a href="https://viem.sh">Viem</a>, and <a href="https://www.rainbowkit.com/">RainbowKit</a>.`,
   },
   {
     question: "Utility",

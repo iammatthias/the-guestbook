@@ -83,8 +83,16 @@ export default function GuestList() {
       return [...arr, item];
     }, [] as any[]);
 
+  // isDev boolean
+  const isDev = import.meta.env.DEV;
   return (
     <>
+      {isDev && (
+        <div className={`${styles.guestcount}`}>
+          <p>{sortedData.length} happy guests</p>
+        </div>
+      )}
+
       {sortedData?.map((guest: any, index) => (
         <div
           key={guest.guest + guest.timestamp}

@@ -1,23 +1,42 @@
 import { useState, useEffect } from "react";
-import { useContractRead } from "wagmi";
+import { useContractRead, useNetwork } from "wagmi";
 import { useContractWrite } from "wagmi";
-import { formatEther, parseEther } from "viem";
+import { formatEther, parseEther, Chain } from "viem";
 
 import styles from "./signTheGuestlist.module.css";
 
+export const zoraGoerli: Chain = {
+  id: 999,
+  name: "Zora Goerli",
+  network: "goerli",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Goerli Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    public: { http: ["https://testnet.rpc.zora.co/"] },
+    default: { http: ["https://testnet.rpc.zora.co/"] },
+  },
+};
+
 // Environment Variables and Constants
-const CONTRACT = import.meta.env.VITE_CONTRACT_BASE_GOERLI;
-const TARGET_CHAIN_ID = 84531;
+const BASE_CONTRACT = import.meta.env.VITE_CONTRACT_BASE_GOERLI;
+const BASE_CHAIN_ID = 84531;
+const ZORA_CONTRACT = import.meta.env.VITE_CONTRACT_ZORA_GOERLI;
+const ZORA_CHAIN_ID = 999;
 
 export default function SignTheGuestlist() {
+  const { chain } = useNetwork();
   const [text, setText] = useState("");
   const [isSponsored, setIsSponsored] = useState(false);
   const [price, setPrice] = useState("0");
   const [isLoading, setIsLoading] = useState(false);
+  const [isFormDisabled, setIsFormDisabled] = useState(false);
 
   const { data: currentMinPrice } = useContractRead({
-    address: CONTRACT,
-    chainId: TARGET_CHAIN_ID,
+    address: chain?.id === BASE_CHAIN_ID ? BASE_CONTRACT : ZORA_CONTRACT,
+    chainId: chain?.id === BASE_CHAIN_ID ? BASE_CHAIN_ID : ZORA_CHAIN_ID,
     functionName: "getCurrentMinPrice",
     watch: true,
     abi: [
@@ -38,8 +57,8 @@ export default function SignTheGuestlist() {
   });
 
   const newGuest = useContractWrite({
-    address: CONTRACT,
-    chainId: TARGET_CHAIN_ID,
+    address: chain?.id === BASE_CHAIN_ID ? BASE_CONTRACT : ZORA_CONTRACT,
+    chainId: chain?.id === BASE_CHAIN_ID ? BASE_CHAIN_ID : ZORA_CHAIN_ID,
     functionName: "signGuestbookNew",
     abi: [
       {
@@ -66,8 +85,8 @@ export default function SignTheGuestlist() {
   });
 
   const newSponsoredGuest = useContractWrite({
-    address: CONTRACT,
-    chainId: TARGET_CHAIN_ID,
+    address: chain?.id === BASE_CHAIN_ID ? BASE_CONTRACT : ZORA_CONTRACT,
+    chainId: chain?.id === BASE_CHAIN_ID ? BASE_CHAIN_ID : ZORA_CHAIN_ID,
     functionName: "sponsorMessage",
     abi: [
       {
@@ -123,6 +142,15 @@ export default function SignTheGuestlist() {
     }
   };
 
+  useEffect(() => {
+    if (chain?.id === 1 || !chain) {
+      setIsFormDisabled(true);
+    }
+    if (chain?.id === BASE_CHAIN_ID || chain?.id === ZORA_CHAIN_ID) {
+      setIsFormDisabled(false);
+    }
+  }, [chain]);
+
   return (
     <form onSubmit={handleSubmit} className={`${styles.form}`}>
       <textarea
@@ -150,7 +178,9 @@ export default function SignTheGuestlist() {
           />
         </label>
       )}
-      <button type='submit'>Submit</button>
+      <button type='submit' disabled={isFormDisabled}>
+        {isFormDisabled ? "Waiting to connect" : `Submit on ${chain?.name}`}
+      </button>
     </form>
   );
 }

@@ -3,8 +3,10 @@ import HTMLReactParser from "html-react-parser";
 
 import styles from "./faq.module.css";
 
-const contract = import.meta.env.VITE_CONTRACT_BASE_GOERLI;
-const blockExplorer = import.meta.env.VITE_BASESCAN;
+const BASE_CONTRACT = import.meta.env.VITE_CONTRACT_BASE_GOERLI;
+const ZORA_CONTRACT = import.meta.env.VITE_CONTRACT_ZORA_GOERLI;
+const BASE_BLOCKEXPLORER = import.meta.env.VITE_BASESCAN;
+const ZORA_BLOCKEXPLORER = import.meta.env.VITE_BLOCKSCOUT;
 const faqClass = `${styles.faq}`;
 const faqItemClass = `${styles.faq__item}`;
 
@@ -22,32 +24,32 @@ const FAQs = [
   {
     question: "Sponsored Messages",
     answer:
-      "Users may sponsor a message to be displayed prominantly at the top of the guestbook. Only one message can be sponsored at a time.<br/><br/>The initial base price for a sponsored message is 0.0001 Ξ. Each new sponsored messaged starts at the last price + 0.0001 Ξ.<br/><br/>If a message has not been sponsored for 21 days the price will slowly decrease until it reaches the original 0.0001 Ξ price point.",
+      "Users may sponsor a message to be displayed prominantly at the top of the guestbook. Only one message can be sponsored at a time on each chain.<br/><br/>The initial base price for a sponsored message is 0.0001 Ξ, and each contract has an independent mechanism. Each new sponsored messaged starts at the last price + 0.0001 Ξ.<br/><br/>If a message has not been sponsored for 21 days the price will slowly decrease until it reaches the original 0.0001 Ξ price point.",
   },
   {
     question: "Open Source",
-    answer: `The Guestbook contract is verified on <a href="${blockExplorer}address/${contract}#code" target="_blank" rel="noreferrer" alt="Link to view the contract on Basescan">Basescan</a>. The source code is available on <a href="https://github.com/iammatthias/the-guestbook/tree/main" target="_blank" rel="noreferrer" alt="Link to view the source code on Github">Github</a>.<br/><br/>The front-end is built with <a href="https://vitejs.dev/">ViteJS</a>, <a href="https://wagmi.sh/">Wagmi</a>, <a href="https://viem.sh">Viem</a>, and <a href="https://www.rainbowkit.com/">RainbowKit</a>.`,
+    answer: `The Guestbook contract is verified on <a href="${BASE_BLOCKEXPLORER}address/${BASE_CONTRACT}#code" target="_blank" rel="noreferrer" alt="Link to view the contract on Basescan">Basescan</a> and <a href="${ZORA_BLOCKEXPLORER}address/${ZORA_CONTRACT}#code" target="_blank" rel="noreferrer" alt="Link to view the contract on Blockscout (Zora testnet)">Blockscout (Zora testnet)</a>. The source code is available on <a href="https://github.com/iammatthias/the-guestbook/tree/main" target="_blank" rel="noreferrer" alt="Link to view the source code on Github">Github</a>.<br/><br/>The front-end is built with <a href="https://vitejs.dev/">ViteJS</a>, <a href="https://wagmi.sh/">Wagmi</a>, <a href="https://viem.sh">Viem</a>, and <a href="https://www.rainbowkit.com/">RainbowKit</a>.`,
   },
   {
     question: "Utility",
-    answer: "There is none. Be safe, and have fun ✌️",
+    answer: "There is no utility. Be safe, and have fun ✌️",
   },
 ];
 
 export default function Faq() {
   return (
     <>
-      <Accordion.Root type='single' className={faqClass} collapsible>
+      <Accordion.Root type='single' className={styles.faq} collapsible>
         <Accordion.Item
-          className={faqItemClass}
+          className={styles.faq__item}
           value={`item-faq`}
           key={`item-faq`}>
           <Accordion.Trigger>FAQ</Accordion.Trigger>
           <Accordion.Content>
-            <Accordion.Root type='single' className={faqClass} collapsible>
+            <Accordion.Root type='single' className={styles.faq} collapsible>
               {FAQs.map((faq, index) => (
                 <Accordion.Item
-                  className={faqItemClass}
+                  className={styles.faq__item}
                   value={`item-${index + 1}`}
                   key={`item-${index + 1}`}>
                   <Accordion.Trigger>{faq.question}</Accordion.Trigger>

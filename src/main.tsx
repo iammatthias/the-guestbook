@@ -7,6 +7,7 @@ import {
   RainbowKitProvider,
   lightTheme,
 } from "@rainbow-me/rainbowkit";
+import { Chain } from "viem";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { mainnet, baseGoerli } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
@@ -19,8 +20,27 @@ import App from "./App";
 const VITE_ALCHEMY = import.meta.env.VITE_ALCHEMY;
 const VITE_WALLETCONNECT = import.meta.env.VITE_WALLETCONNECT;
 
+export const zoraGoerli: Chain = {
+  id: 999,
+  name: "Zora Goerli",
+  network: "goerli",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Goerli Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    public: { http: ["https://testnet.rpc.zora.co/"] },
+    default: { http: ["https://testnet.rpc.zora.co/"] },
+  },
+  blockExplorers: {
+    etherscan: { name: "Blockscout", url: "https://testnet.explorer.zora.co/" },
+    default: { name: "Blockscout", url: "https://testnet.explorer.zora.co/" },
+  },
+};
+
 const { chains, publicClient } = configureChains(
-  [mainnet, baseGoerli],
+  [mainnet, baseGoerli, zoraGoerli],
   [alchemyProvider({ apiKey: VITE_ALCHEMY }), publicProvider()]
 );
 

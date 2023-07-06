@@ -18,7 +18,7 @@ export default function Airdrop() {
     useSendTransaction({
       chainId: 1,
       to: "0x429f42fB5247e3a34D88D978b7491d4b2BEe6105",
-      value: parseEther("0.01"),
+      value: parseEther("0.05"),
     });
 
   const waitForTransaction = useWaitForTransaction({
@@ -62,7 +62,7 @@ export default function Airdrop() {
       <h4>Airdrop</h4>
       <p>Are you here for an Airdrop?</p>
       <p>
-        Donate 0.01 Ξ to support development of The Guestbook & other projects
+        Donate 0.05 Ξ to support development of The Guestbook & other projects
         for{" "}
         <b>
           <i>a chance</i>
@@ -72,7 +72,7 @@ export default function Airdrop() {
       <button
         disabled={isSwitching || !chain || !sendTransaction}
         onClick={handleDonate}>
-        {isSwitching ? "Switching network..." : "Donate 0.01 Ξ on Mainnet"}
+        {isSwitching ? "Switching network..." : "Donate 0.05 Ξ on Mainnet"}
       </button>
       {isLoading && <div>Check Wallet</div>}
       {isSuccess && <div>Transaction: {JSON.stringify(data)}</div>}

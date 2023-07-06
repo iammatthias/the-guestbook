@@ -1,45 +1,46 @@
 import { useState, useEffect } from "react";
-import { useContractRead, useNetwork } from "wagmi";
-import { useContractWrite } from "wagmi";
-import { formatEther, parseEther, Chain } from "viem";
-
+import { useContractWrite, useContractRead, useNetwork } from "wagmi";
+import { formatEther, parseEther } from "viem";
+import { mainnet, baseGoerli, zoraTestnet } from "wagmi/chains";
 import styles from "./signTheGuestlist.module.css";
-
-export const zoraGoerli: Chain = {
-  id: 999,
-  name: "Zora Goerli",
-  network: "goerli",
-  nativeCurrency: {
-    decimals: 18,
-    name: "Goerli Ether",
-    symbol: "ETH",
-  },
-  rpcUrls: {
-    public: { http: ["https://testnet.rpc.zora.co/"] },
-    default: { http: ["https://testnet.rpc.zora.co/"] },
-  },
-};
 
 // Environment Variables and Constants
 const BASE_CONTRACT = import.meta.env.VITE_CONTRACT_BASE_GOERLI;
-const BASE_CHAIN_ID = 84531;
 const ZORA_CONTRACT = import.meta.env.VITE_CONTRACT_ZORA_GOERLI;
-const ZORA_CHAIN_ID = 999;
 
 export default function SignTheGuestlist() {
   const { chain } = useNetwork();
+
   const [text, setText] = useState("");
   const [isSponsored, setIsSponsored] = useState(false);
   const [price, setPrice] = useState("0");
-  const [isLoading, setIsLoading] = useState(false);
   const [isFormDisabled, setIsFormDisabled] = useState(false);
 
-  const { data: currentMinPrice } = useContractRead({
-    address: chain?.id === BASE_CHAIN_ID ? BASE_CONTRACT : ZORA_CONTRACT,
-    chainId: chain?.id === BASE_CHAIN_ID ? BASE_CHAIN_ID : ZORA_CHAIN_ID,
-    functionName: "getCurrentMinPrice",
-    watch: true,
-    abi: [
+  const useContract = (
+    functionName: string,
+    stateMutability: string,
+    args: { internalType: string; name: string; type: string }[],
+    value: string | undefined,
+    isSponsored: boolean | undefined
+  ) => {
+    const { chain } = useNetwork();
+
+    // Determine the appropriate contract and chain ID for the write operation.
+    const contractAddress =
+      chain?.id === baseGoerli.id ? BASE_CONTRACT : ZORA_CONTRACT;
+    const contractChainId =
+      chain?.id === baseGoerli.id ? baseGoerli.id : zoraTestnet.id;
+    const etherValue = isSponsored ? parseEther(value as any) : parseEther("0");
+
+    // Prepare the ABI for the function to call.
+    const abi = [
+      {
+        inputs: args,
+        name: functionName,
+        outputs: [],
+        stateMutability,
+        type: "function",
+      },
       {
         inputs: [],
         name: "getCurrentMinPrice",
@@ -53,70 +54,58 @@ export default function SignTheGuestlist() {
         stateMutability: "view",
         type: "function",
       },
-    ],
-  });
+    ];
 
-  const newGuest = useContractWrite({
-    address: chain?.id === BASE_CHAIN_ID ? BASE_CONTRACT : ZORA_CONTRACT,
-    chainId: chain?.id === BASE_CHAIN_ID ? BASE_CHAIN_ID : ZORA_CHAIN_ID,
-    functionName: "signGuestbookNew",
-    abi: [
+    const { write } = useContractWrite({
+      address: contractAddress,
+      chainId: contractChainId,
+      functionName,
+      value: etherValue,
+      abi,
+    });
+
+    const { data: currentMinPrice } = useContractRead({
+      address: contractAddress,
+      abi, // you need to have a separate ABI for the `getCurrentMinPrice` function
+      functionName: "getCurrentMinPrice", // replace with actual function name in your contract
+    });
+
+    return { write, currentMinPrice };
+  };
+
+  const { write: newGuest } = useContract(
+    "signGuestbookNew",
+    "nonpayable",
+    [
       {
-        inputs: [
-          {
-            internalType: "string",
-            name: "message",
-            type: "string",
-          },
-        ],
-        name: "signGuestbookNew",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
+        internalType: "string",
+        name: "message",
+        type: "string",
       },
     ],
-    onSuccess() {
-      setText("");
-      setIsLoading(false);
-    },
-    onError() {
-      setIsLoading(false);
-    },
-  });
+    "0",
+    false
+  );
 
-  const newSponsoredGuest = useContractWrite({
-    address: chain?.id === BASE_CHAIN_ID ? BASE_CONTRACT : ZORA_CONTRACT,
-    chainId: chain?.id === BASE_CHAIN_ID ? BASE_CHAIN_ID : ZORA_CHAIN_ID,
-    functionName: "sponsorMessage",
-    abi: [
+  const { write: newSponsoredGuest, currentMinPrice } = useContract(
+    "sponsorMessage",
+    "payable",
+    [
       {
-        inputs: [
-          {
-            internalType: "string",
-            name: "message",
-            type: "string",
-          },
-        ],
-        name: "sponsorMessage",
-        outputs: [],
-        stateMutability: "payable",
-        type: "function",
+        internalType: "string",
+        name: "message",
+        type: "string",
       },
     ],
-    args: ["message"],
-    value: parseEther(price as any),
-    onSuccess() {
-      setText("");
-      setIsLoading(false);
-    },
-    onError() {
-      setIsLoading(false);
-    },
-  });
+    price,
+    isSponsored
+  );
+
+  console.log(currentMinPrice);
 
   useEffect(() => {
     if (isSponsored && currentMinPrice) {
-      setPrice(formatEther(currentMinPrice));
+      setPrice(formatEther(currentMinPrice as any));
     }
   }, [isSponsored, currentMinPrice]);
 
@@ -128,27 +117,23 @@ export default function SignTheGuestlist() {
     }
     if (
       isSponsored &&
-      parseFloat(price) < parseFloat(formatEther(currentMinPrice as bigint))
+      parseFloat(price) < parseFloat(formatEther(currentMinPrice as any))
     ) {
       alert("Price must be equal to or greater than the minimum price.");
       return;
     }
 
-    setIsLoading(true);
     if (isSponsored) {
-      newSponsoredGuest?.write({ args: [text] });
+      newSponsoredGuest({ args: [text] });
     } else {
-      newGuest?.write({ args: [text] });
+      newGuest({ args: [text] });
     }
   };
 
   useEffect(() => {
-    if (chain?.id === 1 || !chain) {
-      setIsFormDisabled(true);
-    }
-    if (chain?.id === BASE_CHAIN_ID || chain?.id === ZORA_CHAIN_ID) {
-      setIsFormDisabled(false);
-    }
+    setIsFormDisabled(
+      !(chain?.id === baseGoerli.id || chain?.id === zoraTestnet.id)
+    );
   }, [chain]);
 
   return (
@@ -156,8 +141,14 @@ export default function SignTheGuestlist() {
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder='Your text...'
+        placeholder='gm, hf'
       />
+
+      {chain?.id === mainnet.id && (
+        <div className='alert'>
+          <p>Connect to Base or Zora (testnet) to sign the guestbook</p>
+        </div>
+      )}
 
       <label>
         Is Sponsored?{" "}
@@ -178,8 +169,11 @@ export default function SignTheGuestlist() {
           />
         </label>
       )}
+
       <button type='submit' disabled={isFormDisabled}>
-        {isFormDisabled ? "Waiting to connect" : `Submit on ${chain?.name}`}
+        {isFormDisabled
+          ? "Waiting to connect to Base or Zora (testnet)"
+          : `Submit on ${chain?.name}`}
       </button>
     </form>
   );

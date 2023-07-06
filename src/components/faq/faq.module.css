@@ -10,7 +10,7 @@
   width: 100%;
   font-family: inherit;
   padding: 8px;
-  background: var(--lightGold);
+  background: var(--gold);
 }
 
 .faq__item > div {

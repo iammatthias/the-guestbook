@@ -19,16 +19,16 @@ const FAQs = [
   {
     question: "Content Moderation",
     answer:
-      "We ensure a safe and welcoming space by moderating content. When hateful or inflamatory is posted it will be rewritten to `gm, hf` at the contract owners discretion.",
+      "We ensure a safe and welcoming space by moderating content. Hateful or inflamatory may be rewritten to `gm, hf` at the contract owners discretion.",
   },
   {
     question: "Sponsored Messages",
     answer:
-      "Users may sponsor a message to be displayed prominantly at the top of the guestbook. Only one message can be sponsored at a time on each chain.<br/><br/>The initial base price for a sponsored message is 0.0001 Ξ, and each contract has an independent mechanism. Each new sponsored messaged starts at the last price + 0.0001 Ξ.<br/><br/>If a message has not been sponsored for 21 days the price will slowly decrease until it reaches the original 0.0001 Ξ price point.",
+      "Users may sponsor a message to have it displayed at the top of the guestbook. Only one message can be sponsored at a time on each chain.<br/><br/>The base price for a sponsored message is 0.0001 Ξ on each chain. Each new sponsored messaged starts at the last price + 0.0001 Ξ.<br/><br/>If a message has not been sponsored for 21 days the price will slowly decrease until it reaches the original 0.0001 Ξ price point.",
   },
   {
     question: "Open Source",
-    answer: `The Guestbook contract is verified on <a href="${BASE_BLOCKEXPLORER}address/${BASE_CONTRACT}#code" target="_blank" rel="noreferrer" alt="Link to view the contract on Basescan">Basescan</a> and <a href="${ZORA_BLOCKEXPLORER}address/${ZORA_CONTRACT}#code" target="_blank" rel="noreferrer" alt="Link to view the contract on Blockscout (Zora testnet)">Blockscout (Zora testnet)</a>. The source code is available on <a href="https://github.com/iammatthias/the-guestbook/tree/main" target="_blank" rel="noreferrer" alt="Link to view the source code on Github">Github</a>.<br/><br/>The front-end is built with <a href="https://vitejs.dev/">ViteJS</a>, <a href="https://wagmi.sh/">Wagmi</a>, <a href="https://viem.sh">Viem</a>, and <a href="https://www.rainbowkit.com/">RainbowKit</a>.`,
+    answer: `The Guestbook is verified on <a href="${BASE_BLOCKEXPLORER}address/${BASE_CONTRACT}#code" target="_blank" rel="noreferrer" alt="Link to view the contract on Basescan">Basescan</a> and <a href="${ZORA_BLOCKEXPLORER}address/${ZORA_CONTRACT}#code" target="_blank" rel="noreferrer" alt="Link to view the contract on Blockscout (Zora testnet)">Blockscout (Zora testnet)</a>, and is available on <a href="https://github.com/iammatthias/the-guestbook/tree/main" target="_blank" rel="noreferrer" alt="Link to view the source code on Github">Github</a>.<br/><br/>Built with <a href="https://vitejs.dev/">ViteJS</a>, <a href="https://wagmi.sh/">Wagmi</a>, <a href="https://viem.sh">Viem</a>, and <a href="https://www.rainbowkit.com/">RainbowKit</a>.`,
   },
   {
     question: "Utility",

@@ -1,0 +1,8 @@
+.airdrop {
+  position: relative;
+  padding: 8px 12px;
+  border: 1px solid var(--gold);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

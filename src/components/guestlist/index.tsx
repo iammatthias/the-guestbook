@@ -79,7 +79,7 @@ export default function GuestList() {
         type: "function",
       },
     ],
-  });
+  }) as any;
 
   const {
     data: zoraData,
@@ -127,7 +127,7 @@ export default function GuestList() {
         type: "function",
       },
     ],
-  });
+  }) as any;
 
   if (baseIsLoading || zoraIsLoading) {
     return <div>Loading...</div>;
@@ -153,37 +153,47 @@ export default function GuestList() {
     contract: "Zora",
   }));
 
-  const combinedData = [
-    ...(baseDataFormatted ?? []),
-    ...(zoraDataFormatted ?? []),
+  // Find the most recent sponsored post from each data set
+  const baseDataSponsored = baseDataFormatted?.filter(
+    (item: { isSponsored: any }) => item.isSponsored
+  );
+  baseDataSponsored?.sort(
+    (a: { timestamp: any }, b: { timestamp: any }) =>
+      Number(b.timestamp) - Number(a.timestamp)
+  );
+  const baseDataMostRecentSponsored = baseDataSponsored?.shift();
+
+  const zoraDataSponsored = zoraDataFormatted?.filter(
+    (item: { isSponsored: any }) => item.isSponsored
+  );
+  zoraDataSponsored?.sort(
+    (a: { timestamp: any }, b: { timestamp: any }) =>
+      Number(b.timestamp) - Number(a.timestamp)
+  );
+  const zoraDataMostRecentSponsored = zoraDataSponsored?.shift();
+
+  // Combine and sort the most recent sponsored posts
+  const mostRecentSponsored = [
+    baseDataMostRecentSponsored,
+    zoraDataMostRecentSponsored,
+  ].filter(Boolean);
+  mostRecentSponsored.sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
+
+  // Combine the remaining data
+  const remainingData = [
+    ...(baseDataFormatted?.filter(
+      (item: any) => item !== baseDataMostRecentSponsored
+    ) ?? []),
+    ...(zoraDataFormatted?.filter(
+      (item: any) => item !== zoraDataMostRecentSponsored
+    ) ?? []),
   ];
 
-  // Sort the data by timestamp
-  combinedData.sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
+  // Sort the remaining data by timestamp
+  remainingData.sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
 
-  // Find the index of the first sponsored post from each contract
-  const baseSponsoredIndex = combinedData.findIndex(
-    (item) => item.isSponsored && item.contract === "Base"
-  );
-  const zoraSponsoredIndex = combinedData.findIndex(
-    (item) => item.isSponsored && item.contract === "Zora"
-  );
-
-  let sponsoredPosts = [];
-
-  // Move the first sponsored post from each contract to the start of the array
-  if (baseSponsoredIndex > -1) {
-    const baseSponsoredPost = combinedData.splice(baseSponsoredIndex, 1)[0];
-    sponsoredPosts.push(baseSponsoredPost);
-  }
-  if (zoraSponsoredIndex > -1) {
-    const zoraSponsoredPost = combinedData.splice(zoraSponsoredIndex, 1)[0];
-    sponsoredPosts.push(zoraSponsoredPost);
-  }
-
-  sponsoredPosts.sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
-
-  const recombinedData = [...sponsoredPosts, ...combinedData];
+  // Add the most recent sponsored posts at the start of the array
+  const combinedData = [...mostRecentSponsored, ...remainingData];
 
   // isDev boolean
   const isDev = import.meta.env.DEV;
@@ -191,11 +201,11 @@ export default function GuestList() {
     <>
       {isDev && (
         <div className={`${styles.guestcount}`}>
-          <p>{recombinedData.length} happy guests</p>
+          <p>{combinedData.length} happy guests</p>
         </div>
       )}
 
-      {recombinedData.map((guest: any, index) => (
+      {combinedData.map((guest: any, index) => (
         <div
           key={guest.guest + guest.timestamp}
           className={`${styles.guestlist}`}>

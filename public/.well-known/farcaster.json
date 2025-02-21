@@ -1,0 +1,18 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjI3MjgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgzNmM4NDhFMDA0OGVFMWNkNUU1YmU0NDI4NTQwRTE4M0Y4QmY5RDI2In0",
+    "payload": "eyJkb21haW4iOiJ0aGVndWVzdGJvb2sueHl6In0",
+    "signature": "MHhmYzNkOTgyNDNmM2FkYjJlMWQ3OTkzYmI0NDAxMDQxNmYwMGEyYTE1Y2E4MWU5ZTZlN2VlYWM4OWQwYTlkMTk1M2YzYTZiMmE3NjYyNTI0NGU5NGZmMGE2YmZkNzI5YTAyMWUxZGU4ZjFmMjU1YWJiYWQzMzFkMjQ3NmM3MDk0MTFj"
+  },
+  "frame": {
+    "version": "1",
+    "name": "Example Frame",
+    "iconUrl": "https://theguestbook.xyz/icon.png",
+    "homeUrl": "https://theguestbook.xyz",
+    "imageUrl": "https://theguestbook.xyz/image.png",
+    "buttonTitle": "Check this out",
+    "splashImageUrl": "https://theguestbook.xyz/splash.png",
+    "splashBackgroundColor": "#eeccff",
+    "webhookUrl": "https://theguestbook.xyz/api/webhook"
+  }
+}

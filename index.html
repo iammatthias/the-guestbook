@@ -2,41 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
     <link
       rel="icon"
-      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='10 0 100 100'><text y='.90em' font-size='90'>📖</text></svg>"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Guestbook</title>
-    <meta name="description" content="" />
-
-    <!-- Google / Search Engine Tags -->
-    <meta itemprop="name" content="The Guestbook" />
-    <meta
-      itemprop="description"
-      content="A guestbook that lives on Base & Zora Goerli"
-    />
-    <meta itemprop="image" content="/share_card.png" />
-
-    <!-- Facebook Meta Tags -->
-    <meta property="og:url" content="https://theguestbook.xyz" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="The Guestbook" />
-    <meta
-      property="og:description"
-      content="A guestbook that lives on Base & Zora Goerli"
-    />
-    <meta property="og:image" content="/share_card.png" />
-
-    <!-- Twitter Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="The Guestbook" />
-    <meta
-      name="twitter:description"
-      content="A guestbook that lives on Base & Zora Goerli"
-    />
-    <meta name="twitter:image" content="/share_card.png" />
+    <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/index.min.js"></script>
+    <script>
+      frame.sdk.actions.ready();
+    </script>
   </head>
   <body>
     <div id="root"></div>

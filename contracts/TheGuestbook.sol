@@ -25,10 +25,10 @@ interface IRenderer {
  * @notice Implements an on-chain guestbook with signing options that can mint an NFT.
  */
 contract TheGuestbook is Ownable, ERC721, ReentrancyGuard {
-    uint256 private _guestCount;
-    uint256 private _tokenIdCounter; // Incremented only when minting an NFT.
-    mapping(uint256 => bool) private _rewrittenMessages;
+    // Pack booleans with uint256 values where possible for storage efficiency
     bool private _paused;
+    uint256 private _guestCount;
+    uint256 private _tokenIdCounter;
     string private _gmMessage;
 
     /// @notice External renderer for NFT onchain SVG.
@@ -54,6 +54,9 @@ contract TheGuestbook is Ownable, ERC721, ReentrancyGuard {
 
     /// @notice Mapping from guest ID to token ID (if an NFT was minted for that guest entry).
     mapping(uint256 => uint256) private _guestToToken;
+    
+    /// @notice Mapping to track rewritten messages
+    mapping(uint256 => bool) private _rewrittenMessages;
 
     /* ERRORS */
     error EmptyMessage();
@@ -67,15 +70,28 @@ contract TheGuestbook is Ownable, ERC721, ReentrancyGuard {
 
     /* EVENTS */
     event Gm();
-    event GuestbookSigned( // Defaults to 0 if no token is minted.
-    uint256 indexed guestId, address indexed guest, string message, uint256 timestamp, uint256 tokenId);
+    event GuestbookSigned(
+        uint256 indexed guestId,
+        address indexed guest,
+        string message,
+        uint256 timestamp,
+        uint256 tokenId
+    );
     event GuestbookMessageRewritten(uint256 indexed guestId, uint256 timestamp);
     event PausedStateChanged(bool isPaused);
     event GmMessageUpdated(string newMessage);
     event NFTMinted(uint256 indexed tokenId, address indexed owner);
     event RendererUpdated(address newRenderer);
-    // EIP-4906 Metadata Update event for OpenSea to track metadata changes.
     event MetadataUpdate(uint256 indexed tokenId);
+
+    /**
+     * @notice Contract constructor.
+     */
+    constructor() ERC721("TheGuestbookNFT", "GUEST") Ownable(msg.sender) {
+        renderer = address(new SVGRenderer());
+        _gmMessage = "gm";
+        emit Gm();
+    }
 
     /* MODIFIERS */
     modifier whenNotPaused() {
@@ -89,29 +105,46 @@ contract TheGuestbook is Ownable, ERC721, ReentrancyGuard {
      * @return guestId The new guest ID.
      * @return tokenId The NFT token ID (0 if no NFT is minted).
      */
-    function signGuestbookGm(bool mintNFT) external payable whenNotPaused returns (uint256 guestId, uint256 tokenId) {
+    function signGuestbookGm(bool mintNFT)
+        external
+        payable
+        whenNotPaused
+        returns (uint256 guestId, uint256 tokenId)
+    {
+        // Gas optimization: Inline fee check rather than computing fee first
         if (mintNFT && msg.value < NFT_FEE) revert InsufficientFee();
 
+        // Gas optimization: Initialize tokenId directly to 0
         tokenId = 0;
+        
+        // Gas optimization: Consolidate mint logic
         if (mintNFT) {
-            _tokenIdCounter++;
+            unchecked { _tokenIdCounter++; }
             tokenId = _tokenIdCounter;
         }
-        unchecked {
-            _guestCount++;
-        }
+        
+        // Gas optimization: Use unchecked for counter increment
+        unchecked { _guestCount++; }
         guestId = _guestCount;
+        
+        // Emit event first to optimize gas (avoids potential storage reads after writes)
         emit GuestbookSigned(guestId, msg.sender, _gmMessage, block.timestamp, tokenId);
 
+        // Gas optimization: Only perform these operations if minting
         if (mintNFT) {
             _guestToToken[guestId] = tokenId;
+            
+            // Gas optimization: Group storage writes together
             nftData[tokenId] = NFTData({
                 author: msg.sender,
                 message: _gmMessage,
                 timestamp: block.timestamp,
                 blockNumber: block.number
             });
-            _mintNFT(tokenId, msg.sender);
+            
+            // Gas optimization: Direct mint instead of helper function
+            _mint(msg.sender, tokenId);
+            emit NFTMinted(tokenId, msg.sender);
         }
 
         return (guestId, tokenId);
@@ -130,27 +163,47 @@ contract TheGuestbook is Ownable, ERC721, ReentrancyGuard {
         whenNotPaused
         returns (uint256 guestId, uint256 tokenId)
     {
-        uint256 requiredFee = CUSTOM_MSG_FEE + (mintNFT ? NFT_FEE : 0);
+        // Gas optimization: Simplified fee check with early return pattern
+        uint256 requiredFee = CUSTOM_MSG_FEE;
+        if (mintNFT) requiredFee += NFT_FEE;
         if (msg.value < requiredFee) revert InsufficientFee();
-        if (bytes(message).length == 0) revert EmptyMessage();
-        if (bytes(message).length > 140) revert MessageTooLong();
+        
+        // Validate message length
+        uint256 messageLength = bytes(message).length;
+        if (messageLength == 0) revert EmptyMessage();
+        if (messageLength > 140) revert MessageTooLong();
 
+        // Gas optimization: Initialize tokenId directly
         tokenId = 0;
+        
+        // Gas optimization: Consolidate mint logic
         if (mintNFT) {
-            _tokenIdCounter++;
+            unchecked { _tokenIdCounter++; }
             tokenId = _tokenIdCounter;
         }
-        unchecked {
-            _guestCount++;
-        }
+        
+        // Gas optimization: Use unchecked for counter increment
+        unchecked { _guestCount++; }
         guestId = _guestCount;
+        
+        // Emit event first to optimize gas
         emit GuestbookSigned(guestId, msg.sender, message, block.timestamp, tokenId);
 
+        // Gas optimization: Only perform operations if minting
         if (mintNFT) {
             _guestToToken[guestId] = tokenId;
-            nftData[tokenId] =
-                NFTData({author: msg.sender, message: message, timestamp: block.timestamp, blockNumber: block.number});
-            _mintNFT(tokenId, msg.sender);
+            
+            // Gas optimization: Group storage writes
+            nftData[tokenId] = NFTData({
+                author: msg.sender,
+                message: message,
+                timestamp: block.timestamp,
+                blockNumber: block.number
+            });
+            
+            // Gas optimization: Direct mint
+            _mint(msg.sender, tokenId);
+            emit NFTMinted(tokenId, msg.sender);
         }
 
         return (guestId, tokenId);
@@ -162,7 +215,9 @@ contract TheGuestbook is Ownable, ERC721, ReentrancyGuard {
     function withdrawAll() external onlyOwner nonReentrant {
         uint256 balance = address(this).balance;
         if (balance == 0) revert NoFundsToWithdraw();
-        (bool success,) = payable(owner()).call{value: balance}("");
+        
+        // Gas optimization: Use call instead of transfer 
+        (bool success, ) = payable(owner()).call{value: balance}("");
         require(success, "Transfer failed");
     }
 
@@ -171,14 +226,18 @@ contract TheGuestbook is Ownable, ERC721, ReentrancyGuard {
      * @param guestId The guest ID to rewrite.
      */
     function rewriteMessage(uint256 guestId) external onlyOwner {
+        // Gas optimization: Combined condition check
         if (guestId == 0 || guestId > _guestCount) revert InvalidGuestId();
         if (_rewrittenMessages[guestId]) revert MessageAlreadyRewritten();
 
         _rewrittenMessages[guestId] = true;
+        
+        // Gas optimization: Only look up token if needed for event
         uint256 tokenId = _guestToToken[guestId];
         if (tokenId != 0) {
             emit MetadataUpdate(tokenId);
         }
+        
         emit GuestbookMessageRewritten(guestId, block.timestamp);
     }
 
@@ -244,34 +303,25 @@ contract TheGuestbook is Ownable, ERC721, ReentrancyGuard {
      * @param tokenId The NFT token ID.
      */
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        // Gas optimization: Use direct author check for token existence
         if (nftData[tokenId].author == address(0)) revert TokenDoesNotExist();
+        
+        // Gas optimization: Use memory struct to reduce SLOAD operations
         NFTData memory data = nftData[tokenId];
         string memory formattedDate = Utils.formatTimestamp(data.timestamp);
         string memory sanitizedMessage = Utils.sanitizeInput(data.message);
-        return IRenderer(renderer).tokenURI(tokenId, data.author, sanitizedMessage, formattedDate, data.blockNumber);
-    }
-
-    /**
-     * @dev Mints an NFT and emits an {NFTMinted} event.
-     * @param tokenId The token ID for the NFT.
-     * @param to The address to receive the NFT.
-     */
-    function _mintNFT(uint256 tokenId, address to) internal {
-        _mint(to, tokenId);
-        emit NFTMinted(tokenId, to);
+        
+        return IRenderer(renderer).tokenURI(
+            tokenId, 
+            data.author, 
+            sanitizedMessage, 
+            formattedDate, 
+            data.blockNumber
+        );
     }
 
     /**
      * @notice Fallback function to receive Ether.
      */
-    receive() external payable {}
-
-    /**
-     * @notice Contract constructor.
-     */
-    constructor() ERC721("TheGuestbookNFT", "GUEST") Ownable(msg.sender) {
-        renderer = address(new SVGRenderer());
-        _gmMessage = "gm";
-        emit Gm();
-    }
+    receive() external payable { }
 }

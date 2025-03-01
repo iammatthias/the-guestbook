@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { parseEther } from "viem";
 import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { baseSepolia } from "wagmi/chains";
@@ -16,6 +16,8 @@ export function SigningForm({ isPaused, onSuccess }: SigningFormProps) {
   const [customMessage, setCustomMessage] = useState<string>("gm");
   const [mintNFT, setMintNFT] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
 
   // Contract writes
   const { writeContract: writeGm, isPending: isGmPending, data: gmHash } = useWriteContract();
@@ -34,6 +36,28 @@ export function SigningForm({ isPaused, onSuccess }: SigningFormProps) {
 
   const isLoading = isGmPending || isCustomPending || isGmConfirming || isCustomConfirming;
 
+  // Reset form when transaction is successful
+  useEffect(() => {
+    if (isGmSuccess || isCustomSuccess) {
+      // Reset form after successful transaction
+      setCustomMessage("gm");
+      setMintNFT(false);
+      setError(null);
+      setIsSubmitting(false);
+      setShowSuccess(true);
+
+      // Hide success message after a delay
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 10000); // 10 seconds
+
+      // Notify parent component
+      onSuccess();
+
+      return () => clearTimeout(timer);
+    }
+  }, [isGmSuccess, isCustomSuccess, onSuccess]);
+
   const { mutate: signGuestbook, isPending: mutationLoading } = useMutation({
     mutationFn: async () => {
       if (isPaused) {
@@ -42,7 +66,19 @@ export function SigningForm({ isPaused, onSuccess }: SigningFormProps) {
       }
 
       try {
-        const value = mintNFT ? parseEther("0.00111") : 0n;
+        // Calculate the correct value to send
+        let value = 0n;
+
+        // Add fee for custom message (not "gm")
+        if (customMessage.toLowerCase() !== "gm") {
+          value += parseEther("0.00111");
+        }
+
+        // Add fee for NFT minting
+        if (mintNFT) {
+          value += parseEther("0.00111");
+        }
+
         if (customMessage.toLowerCase() === "gm") {
           writeGm({
             address: contractAddress,
@@ -74,17 +110,17 @@ export function SigningForm({ isPaused, onSuccess }: SigningFormProps) {
       } catch (err) {
         console.error("Error signing guestbook:", err);
         setError(getErrorMessage(err));
+        setIsSubmitting(false);
       }
     },
     onSuccess: () => {
-      setError(null);
-      setCustomMessage("gm");
-      setMintNFT(false);
-      onSuccess();
+      // Note: We're now handling the form reset in the useEffect above
+      // to ensure it happens after the transaction is confirmed
     },
     onError: (error: unknown) => {
       console.error("Error signing guestbook:", error);
       setError(getErrorMessage(error));
+      setIsSubmitting(false);
     },
   });
 
@@ -93,14 +129,19 @@ export function SigningForm({ isPaused, onSuccess }: SigningFormProps) {
     if (!customMessage.trim()) return;
 
     try {
+      setIsSubmitting(true);
       await signGuestbook();
     } catch (error) {
       console.error("Error submitting:", error);
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className={styles.form}>
+      <h3 className='flex-center'>✦ SIGN THE GUESTBOOK ✦</h3>
+      <div className='pixel-divider'></div>
+
       <div className={styles.messageTypeSelector}>
         <label className={`${styles.messageType} ${customMessage.toLowerCase() === "gm" ? styles.active : ""}`}>
           <input
@@ -110,9 +151,9 @@ export function SigningForm({ isPaused, onSuccess }: SigningFormProps) {
               setCustomMessage("gm");
               setError(null);
             }}
-            disabled={isLoading || mutationLoading}
+            disabled={isLoading || mutationLoading || isSubmitting}
           />
-          "gm""
+          <span style={{ fontWeight: "bold" }}>» "gm"</span>
         </label>
         <label className={`${styles.messageType} ${customMessage.toLowerCase() !== "gm" ? styles.active : ""}`}>
           <input
@@ -122,9 +163,9 @@ export function SigningForm({ isPaused, onSuccess }: SigningFormProps) {
               setCustomMessage("");
               setError(null);
             }}
-            disabled={isLoading || mutationLoading}
+            disabled={isLoading || mutationLoading || isSubmitting}
           />
-          Custom
+          <span style={{ fontWeight: "bold" }}>✎ Custom</span>
         </label>
       </div>
 
@@ -140,7 +181,7 @@ export function SigningForm({ isPaused, onSuccess }: SigningFormProps) {
             }}
             placeholder='Your message (max 140 characters)'
             maxLength={140}
-            disabled={isLoading || mutationLoading}
+            disabled={isLoading || mutationLoading || isSubmitting}
             rows={3}
           />
           <span className={customMessage.length > 140 ? styles.error : ""}>
@@ -154,12 +195,14 @@ export function SigningForm({ isPaused, onSuccess }: SigningFormProps) {
           type='checkbox'
           checked={mintNFT}
           onChange={(e) => setMintNFT(e.target.checked)}
-          disabled={isLoading || mutationLoading}
+          disabled={isLoading || mutationLoading || isSubmitting}
         />
-        <span>Mint onchain (+0.00111 Ξ)</span>
+        <span style={{ fontWeight: "bold" }}>◈ Mint onchain (+0.00111 Ξ)</span>
       </label>
 
       <div className='flex-col'>
+        <div className='pixel-divider'></div>
+        <h4 className='flex-center'>$ PRICE BREAKDOWN $</h4>
         <div className={styles.priceBreakdown}>
           <span>Message fee:</span>
           <span>{customMessage.toLowerCase() === "gm" ? "No contract fee" : "0.00111 Ξ"}</span>
@@ -180,6 +223,7 @@ export function SigningForm({ isPaused, onSuccess }: SigningFormProps) {
           <span>Gas fees:</span>
           <span>Variable (paid to network)</span>
         </div>
+        <div className='pixel-divider'></div>
       </div>
 
       <div className={styles.actionButtons}>
@@ -188,18 +232,20 @@ export function SigningForm({ isPaused, onSuccess }: SigningFormProps) {
           disabled={
             isLoading ||
             Boolean(isPaused) ||
+            isSubmitting ||
+            mutationLoading ||
             (customMessage.toLowerCase() !== "gm" && (!customMessage.trim() || customMessage.length > 140))
           }
         >
-          {mutationLoading ? "Signing..." : "Sign the Guestbook"}
+          {isSubmitting || mutationLoading || isLoading ? "⌛ SIGNING..." : "✍ SIGN THE GUESTBOOK"}
         </button>
       </div>
 
       {error && <div className={styles.error}>{error}</div>}
-      {(isGmSuccess || isCustomSuccess) && (
+      {showSuccess && (
         <div className={styles.success}>
-          You signed the guestbook! It will appear below in a few seconds.
-          {mintNFT && " Your NFT is being minted."}
+          ★ You signed the guestbook! It will appear below in a few seconds.
+          {mintNFT && " Your NFT is being minted. ◈"}
         </div>
       )}
     </div>

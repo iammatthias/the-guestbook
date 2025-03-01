@@ -1,5 +1,5 @@
 import { http } from "wagmi";
-import { baseSepolia } from "wagmi/chains";
+import { baseSepolia, mainnet } from "wagmi/chains";
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 
 // Ensure environment variable is available
@@ -11,9 +11,10 @@ if (!projectId) {
 export const config = getDefaultConfig({
   appName: "iammatthias.com",
   projectId: projectId || "development-only-project-id",
-  chains: [baseSepolia],
+  chains: [baseSepolia, mainnet],
   transports: {
     [baseSepolia.id]: http("https://rpc.ankr.com/base_sepolia"),
+    [mainnet.id]: http("https://eth.llamarpc.com"),
   },
   ssr: true, // Enable server-side rendering support
 });

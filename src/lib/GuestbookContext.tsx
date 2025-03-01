@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useRef, useCallback } from "react";
-import { useAccount, usePublicClient, useWatchContractEvent, useEnsName } from "wagmi";
-import { baseSepolia, mainnet } from "wagmi/chains";
+import { createContext, useContext, useState, useEffect, ReactNode, useRef, useCallback } from "react";
+import { usePublicClient, useWatchContractEvent } from "wagmi";
+import { baseSepolia } from "wagmi/chains";
 import { parseAbiItem } from "viem";
 import { useQuery } from "@tanstack/react-query";
 import { sleep } from "../utils/sleep";
@@ -42,7 +42,6 @@ interface GuestbookProviderProps {
 }
 
 export function GuestbookProvider({ children }: GuestbookProviderProps) {
-  const { isConnected } = useAccount();
   const publicClient = usePublicClient();
   const [knownTransactionHashes, setKnownTransactionHashes] = useState<Set<string>>(new Set());
   const audioRef = useRef<HTMLAudioElement | null>(null);

@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { GuestbookEvent } from "./types";
 import { GuestbookEntry } from "./GuestbookEntry";
 import styles from "./Guestbook.module.css";
 import { useGuestbook } from "../../lib/GuestbookContext";

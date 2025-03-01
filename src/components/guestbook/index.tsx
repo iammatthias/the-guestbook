@@ -26,7 +26,7 @@ export default function GuestbookContent() {
   return (
     <>
       <img className='hero' src='/guestbook.png' alt='Guestbook' />
-      <Marquee location='header' />
+      <Marquee />
 
       <section className={styles.section}>
         <div className='pixel-divider'></div>
@@ -79,7 +79,7 @@ export default function GuestbookContent() {
       )}
 
       <footer className='flex-center' style={{ marginTop: "2rem" }}>
-        <Marquee location='footer' />
+        <Marquee />
       </footer>
     </>
   );

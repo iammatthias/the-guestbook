@@ -11,12 +11,12 @@ function App() {
         <meta name='description' content='Leave your message onchain' />
         <meta name='keywords' content='guestbook, web3, blockchain, 90s, retro, nostalgia' />
         <meta name='viewport' content='width=device-width, initial-scale=1.0' />
-        <meta name='theme-color' content='#000080' />
+        <meta name='theme-color' content='#000033' />
         <meta name='author' content='@iammatthias' />
         {/* Frame Embed */}
         <meta
           name='fc:frame'
-          content='{"version":"next","imageUrl":"https://theguestbook.xyz/image.png","button":{"title":"Explore","action":{"type":"launch_frame","name":"Explore","url":"https://theguestbook.xyz","splashImageUrl":"https://theguestbook.xyz/icon.png","splashBackgroundColor":"#242424"}}}'
+          content='{"version":"next","imageUrl":"https://theguestbook.xyz/image.png","button":{"title":"Explore","action":{"type":"launch_frame","name":"Explore","url":"https://theguestbook.xyz","splashImageUrl":"https://theguestbook.xyz/splash.png","splashBackgroundColor":"#000033"}}}'
         />
       </Head>
       <WagmiProvider>

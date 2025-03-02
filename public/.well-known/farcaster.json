@@ -6,13 +6,13 @@
   },
   "frame": {
     "version": "1",
-    "name": "Example Frame",
+    "name": "The Guestbook",
     "iconUrl": "https://theguestbook.xyz/icon.png",
     "homeUrl": "https://theguestbook.xyz",
     "imageUrl": "https://theguestbook.xyz/image.png",
-    "buttonTitle": "Check this out",
+    "buttonTitle": "Sign the Guestbook",
     "splashImageUrl": "https://theguestbook.xyz/splash.png",
-    "splashBackgroundColor": "#eeccff",
+    "splashBackgroundColor": "#000033",
     "webhookUrl": "https://theguestbook.xyz/api/webhook"
   }
 }

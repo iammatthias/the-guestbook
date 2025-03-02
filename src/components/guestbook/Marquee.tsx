@@ -87,9 +87,9 @@ export function Marquee() {
   // Create the message content - same for both header and footer
   const messageContent = (
     <>
-      ★ BUILT ON BASE WITH ONCHAIN TECHNOLOGY ★ {events?.length || 0} VISITORS HAVE SIGNED ★ COLLECT YOUR MESSAGE
-      ONCHAIN ★ POWERED BY ETHEREUM ★ {isHighlighted && <span className='new-message-indicator'>NEW MESSAGE! </span>}
-      LAST MESSAGE POSTED: "{message}" BY {displayName} AT {time} ★
+      ★ BUILT ON BASE ★ {events?.length || 0} GUESTS ★ COLLECT YOUR MESSAGE ONCHAIN ★{" "}
+      {isHighlighted && <span className='new-message-indicator'>NEW MESSAGE! </span>}
+      LAST MESSAGE POSTED: "{message}" BY {displayName} AT {time} ★ POWERED BY ONCHAIN TECHNOLOGY ★
     </>
   );
 

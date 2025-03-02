@@ -17,6 +17,7 @@ export function GuestbookEntry({ event }: GuestbookEntryProps) {
   const entryRef = useRef<HTMLElement>(null);
   const processedRef = useRef(false);
   const prevEventsLengthRef = useRef(0);
+  const isInitialRenderRef = useRef(true);
 
   // Fetch ENS name for this entry's address
   const { data: ensName } = useEnsName({
@@ -47,8 +48,8 @@ export function GuestbookEntry({ event }: GuestbookEntryProps) {
       setIsNew(true);
       processedRef.current = true;
 
-      // Scroll to the new entry
-      if (entryRef.current) {
+      // Only scroll to the new entry if it's not the initial render
+      if (entryRef.current && !isInitialRenderRef.current) {
         entryRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     }
@@ -57,6 +58,9 @@ export function GuestbookEntry({ event }: GuestbookEntryProps) {
       console.log("This entry is no longer the newest:", event);
       setIsNew(false);
     }
+
+    // After the first render, set the flag to false
+    isInitialRenderRef.current = false;
   }, [events.length, event, isNew, isNewestEntry]);
 
   // Display name is ENS name if available, otherwise use AddressDisplay component
@@ -76,7 +80,7 @@ export function GuestbookEntry({ event }: GuestbookEntryProps) {
 
   return (
     <article ref={entryRef} className={`${styles.guestEntry} ${isNew ? "guestbook-entry new" : "guestbook-entry"}`}>
-      {isNew && <div className='new-entry-indicator'>NEW ENTRY</div>}
+      {isNew && <div className='new-entry-indicator'>LATEST GUEST</div>}
       <div className='flex-between'>
         <small>
           {randomIcon} {new Date(Number(event.timestamp * 1000n)).toLocaleString()}

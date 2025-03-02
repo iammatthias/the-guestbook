@@ -31,8 +31,8 @@ export default function GuestbookContent() {
       <section className={styles.section}>
         <div className='pixel-divider'></div>
         <p>
-          Sign the guestbook on Base with a "gm" or leave a message (0.00111 Ξ), mint it if you want (0.00111 Ξ). Don't
-          be a jerk — harmful content will be moderated. Onchain gas fees still apply.
+          Sign the guestbook on Base with a "gm" or leave a message (0.00111 Ξ), mint it if you want (0.00111 Ξ).
+          Harmful content will be removed, don't be a jerk. Onchain gas fees still apply.
         </p>
         <div className='pixel-divider'></div>
 
